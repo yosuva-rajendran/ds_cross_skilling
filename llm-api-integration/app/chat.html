@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h3>Ask</h3>
+    <textarea id="input" rows="5" cols="80"></textarea>
+    <br><br>
+
+    <button onclick="sendMessage()">Send</button>
+
+    <h3>Response</h3>
+    <textarea id="output" rows="20" cols="80" readonly></textarea>
+
+    <script>
+        async function sendMessage() {
+            const prompt = document.getElementById("input").value;
+            const output = document.getElementById("output");
+
+            output.value = "";
+
+            const response = await fetch("http://localhost:8000/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    messages: [
+                        {
+                            role: "user",
+                            content: prompt
+                        }
+                    ]
+                })
+            });
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+
+            while (true) {
+                const { done, value } = await reader.read();
+
+                if (done) break;
+
+                output.value += decoder.decode(value);
+            }
+        }
+    </script>
+</body>
+</html>
