@@ -42,3 +42,25 @@ class DocumentRepository:
             points=points,
             wait=True,
         )
+
+    def search(
+        self,
+        collection_name: str,
+        query_vector: list[float],
+        top_k: int,
+    ) -> list[dict]:
+        response = self.client.query_points(
+            collection_name=collection_name,
+            query=query_vector,
+            limit=top_k,
+        )
+        return [
+            {
+                "text": hit.payload["text"],
+                "score": hit.score,
+                "filename": hit.payload["filename"],
+                "chunk_index": hit.payload["chunk_index"],
+                "document_id": hit.payload["document_id"],
+            }
+            for hit in response.points
+        ]
