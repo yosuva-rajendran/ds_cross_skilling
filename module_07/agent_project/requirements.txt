@@ -1,0 +1,6 @@
+groq==1.6.0
+httpx>=0.23,<0.28  # Groq tool calling fails with httpx 0.28+ (removed 'proxies'; api returns tool_use_failed)
+requests==2.32.3
+primp==1.3.1  # web_search tool: browser TLS impersonation (no API key)
+lxml==6.1.1   # web_search tool: HTML parsing
+python-dotenv==1.0.1
