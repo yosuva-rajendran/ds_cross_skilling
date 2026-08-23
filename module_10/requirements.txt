@@ -1,0 +1,3 @@
+crewai>=0.175.0
+crewai[tools]
+python-dotenv
