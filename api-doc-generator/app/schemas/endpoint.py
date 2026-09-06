@@ -6,6 +6,7 @@ from pydantic import BaseModel
 class EndpointResponse(BaseModel):
     id: int
     project_id: int
+    version_id: int
     path: str
     method: str
 

@@ -11,6 +11,10 @@ class Endpoint(SQLModel, table=True):
 
     project_id: int = Field(foreign_key="projects.id")
 
+    version_id: int = Field(
+        foreign_key="api_versions.id"
+    )
+
     path: str
     method: str
 

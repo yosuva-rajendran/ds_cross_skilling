@@ -9,7 +9,13 @@ class ComponentSchema(SQLModel, table=True):
 
     id: int | None = Field(default=None, primary_key=True)
 
-    project_id: int = Field(foreign_key="projects.id")
+    project_id: int = Field(
+        foreign_key="projects.id"
+    )
+
+    version_id: int = Field(
+        foreign_key="api_versions.id"
+    )
 
     name: str
     description: str | None = None

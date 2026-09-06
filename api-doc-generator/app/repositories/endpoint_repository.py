@@ -36,3 +36,9 @@ class EndpointRepository:
         )
 
         return list(self.session.exec(statement).all())
+
+    def get_by_version(self, version_id: int) -> list[Endpoint]:
+        statement = select(Endpoint).where(
+            Endpoint.version_id == version_id
+        )
+        return list(self.session.exec(statement).all())

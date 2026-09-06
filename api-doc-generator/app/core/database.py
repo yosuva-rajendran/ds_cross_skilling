@@ -1,7 +1,7 @@
 from sqlmodel import Session, SQLModel, create_engine
 
 from app.core.config import settings
-from app.models import Project, Endpoint
+from app.models import Project, Endpoint, ComponentSchema, APIVersion
 
 
 engine = create_engine(

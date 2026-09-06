@@ -35,6 +35,6 @@ async def ingest_openapi(
 
     except ValueError as e:
         raise HTTPException(
-            status_code=400,
+            status_code=409,
             detail=str(e),
         )
