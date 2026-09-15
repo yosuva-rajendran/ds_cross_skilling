@@ -6,8 +6,6 @@ from app.schemas.api_version import APIVersionResponse
 
 
 class Change(BaseModel):
-    """A single detected change between two API versions."""
-
     type: str
     severity: Literal["breaking", "non_breaking", "informational"]
     method: str | None = None

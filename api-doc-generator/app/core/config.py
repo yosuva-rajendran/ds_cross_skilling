@@ -7,6 +7,9 @@ class Settings(BaseSettings):
     debug: bool = True
 
     database_url: str
+    openai_api_key: str = ""
+    openai_model: str = "gpt-4o"
+    openai_base_url: str = ""
 
     model_config = SettingsConfigDict(
         env_file=".env",

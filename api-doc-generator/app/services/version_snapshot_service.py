@@ -6,7 +6,6 @@ from app.repositories.component_repository import ComponentRepository
 
 
 class VersionSnapshotService:
-    """Retrieves a complete snapshot of an API version including its endpoints and components."""
 
     def __init__(self, session: Session):
         self.version_repository = APIVersionRepository(session)
@@ -14,13 +13,6 @@ class VersionSnapshotService:
         self.component_repository = ComponentRepository(session)
 
     def get_snapshot(self, project_id: int, version_id: int) -> dict:
-        """Get a complete version snapshot with endpoints and components.
-
-        Validates that the version exists and belongs to the specified project.
-
-        Raises:
-            ValueError: If the version is not found or belongs to a different project.
-        """
         version = self.version_repository.get_by_id(version_id)
 
         if not version:

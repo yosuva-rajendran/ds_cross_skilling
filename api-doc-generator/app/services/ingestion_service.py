@@ -8,6 +8,7 @@ from app.repositories.endpoint_repository import EndpointRepository
 
 from app.parsers.openapi_parser import parse_openapi
 from app.parsers.component_parser import parse_components
+from app.parsers.fastapi_parser import parse_fastapi_source
 
 from app.services.openapi_service import OpenAPIService
 from app.services.component_service import ComponentService
@@ -26,13 +27,11 @@ class IngestionService:
         content: bytes,
     ) -> dict:
 
-        # 1. Load OpenAPI file
         spec = OpenAPIService.load_file(
             filename,
             content,
         )
 
-        # 2. Get API version
         version = spec.get("info", {}).get("version")
 
         if not version:
@@ -40,7 +39,6 @@ class IngestionService:
                 "OpenAPI specification must contain info.version"
             )
 
-        # 3. Create API version
         api_version = APIVersion(
             project_id=project_id,
             version=version,
@@ -50,7 +48,6 @@ class IngestionService:
             api_version
         )
 
-        # 4. Parse endpoints
         parsed_endpoints = parse_openapi(spec)
 
         endpoints = [
@@ -75,13 +72,61 @@ class IngestionService:
             endpoints
         )
 
-        # 5. Parse components
         parsed_components = parse_components(spec)
 
         saved_components = self.component_service.save_components(
         project_id=project_id,
         version_id=saved_version.id,
         parsed_components=parsed_components,
+        )
+
+        return {
+            "version": saved_version,
+            "endpoints": saved_endpoints,
+            "components": saved_components,
+        }
+
+    def ingest_source_code(
+        self,
+        project_id: int,
+        version: str,
+        source_code: str,
+    ) -> dict:
+        api_version = APIVersion(
+            project_id=project_id,
+            version=version,
+        )
+
+        saved_version = self.api_version_repository.create(api_version)
+
+        result = parse_fastapi_source(source_code)
+        parsed_endpoints = result["endpoints"]
+        parsed_components = result["components"]
+
+        endpoints = [
+            Endpoint(
+                project_id=project_id,
+                version_id=saved_version.id,
+                path=data["path"],
+                method=data["method"],
+                tags=data.get("tags"),
+                summary=data.get("summary"),
+                description=data.get("description"),
+                operation_id=data.get("operation_id"),
+                parameters=data.get("parameters"),
+                request_body=data.get("request_body"),
+                responses=data.get("responses"),
+                security=data.get("security"),
+            )
+            for data in parsed_endpoints
+        ]
+
+        saved_endpoints = self.endpoint_repository.create_many(endpoints)
+
+        saved_components = self.component_service.save_components(
+            project_id=project_id,
+            version_id=saved_version.id,
+            parsed_components=parsed_components,
         )
 
         return {
